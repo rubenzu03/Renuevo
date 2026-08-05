@@ -16,3 +16,9 @@ export async function proxy(req: NextRequest) {
   login.searchParams.set("next", pathname + search);
   return NextResponse.redirect(login);
 }
+
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|css|js|mjs|woff2?)$).*)",
+  ],
+};
