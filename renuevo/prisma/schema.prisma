@@ -1,8 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -10,4 +8,46 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model Subscription {
+  id                String       @id @default(cuid())
+  name              String
+  currency          Decimal
+  billing_cycle     BillingCycle
+  next_renewal_date DateTime
+  category          String
+  is_active         Boolean      @default(true)
+  created_at        DateTime     @default(now())
+  updated_at        DateTime     @updatedAt
+
+  price_histories   PriceHistory[]
+  notification_logs NotificationLog[]
+}
+
+model PriceHistory {
+  id              String       @id @default(cuid())
+  price           Decimal
+  recorded_at     DateTime     @default(now())
+  subscription_id String
+  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+}
+
+model NotificationLog {
+  id                  String        @id @default(cuid())
+  subscription_id     String
+  type                String
+  billing_cycle_start DateTime
+  sent_at             DateTime      @default(now())
+  subscription        Subscription? @relation(fields: [subscriptionId], references: [id])
+  subscriptionId      String?
+
+  @@unique([subscription_id, type, billing_cycle_start])
+}
+
+enum BillingCycle {
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  YEARLY
 }
