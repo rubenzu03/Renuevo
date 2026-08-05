@@ -120,9 +120,8 @@ export async function updateSubscription(
 
 export async function deleteSubscription(
   id: string,
-  _prevState: ActionState,
   _formData: FormData
-): Promise<ActionState> {
+): Promise<void> {
   await requireAuth();
   await prisma.subscription.delete({ where: { id } });
   revalidatePath("/subscriptions");
@@ -131,12 +130,11 @@ export async function deleteSubscription(
 
 export async function toggleSubscriptionActive(
   id: string,
-  _prevState: ActionState,
   _formData: FormData
-): Promise<ActionState> {
+): Promise<void> {
   await requireAuth();
   const existing = await prisma.subscription.findUnique({ where: { id } });
-  if (!existing) return { status: "error", message: "Subscription not found" };
+  if (!existing) redirect("/subscriptions");
 
   await prisma.subscription.update({
     where: { id },
