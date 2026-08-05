@@ -1,14 +1,16 @@
 -- CreateEnum
-CREATE TYPE "BillingCycle" AS ENUM ('WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY');
+CREATE TYPE "BillingCycle" AS ENUM ('weekly', 'monthly', 'quarterly', 'yearly');
 
 -- CreateTable
 CREATE TABLE "Subscription" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "currency" DECIMAL(65,30) NOT NULL,
+    "price_current" DECIMAL(65,30) NOT NULL,
+    "currency" TEXT NOT NULL,
     "billing_cycle" "BillingCycle" NOT NULL,
+    "billing_interval_days" INTEGER,
     "next_renewal_date" TIMESTAMP(3) NOT NULL,
-    "category" TEXT NOT NULL,
+    "category" TEXT,
     "is_active" BOOLEAN NOT NULL DEFAULT true,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -33,7 +35,6 @@ CREATE TABLE "NotificationLog" (
     "type" TEXT NOT NULL,
     "billing_cycle_start" TIMESTAMP(3) NOT NULL,
     "sent_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "subscriptionId" TEXT,
 
     CONSTRAINT "NotificationLog_pkey" PRIMARY KEY ("id")
 );
@@ -42,7 +43,7 @@ CREATE TABLE "NotificationLog" (
 CREATE UNIQUE INDEX "NotificationLog_subscription_id_type_billing_cycle_start_key" ON "NotificationLog"("subscription_id", "type", "billing_cycle_start");
 
 -- AddForeignKey
-ALTER TABLE "PriceHistory" ADD CONSTRAINT "PriceHistory_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "Subscription"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "PriceHistory" ADD CONSTRAINT "PriceHistory_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "Subscription"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "NotificationLog" ADD CONSTRAINT "NotificationLog_subscriptionId_fkey" FOREIGN KEY ("subscriptionId") REFERENCES "Subscription"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "NotificationLog" ADD CONSTRAINT "NotificationLog_subscription_id_fkey" FOREIGN KEY ("subscription_id") REFERENCES "Subscription"("id") ON DELETE CASCADE ON UPDATE CASCADE;
