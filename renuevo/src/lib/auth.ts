@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export const AUTH_COOKIE = "renuevo_session";
 
@@ -50,4 +51,10 @@ export async function login(password: string): Promise<boolean> {
 
 export async function logout(): Promise<void> {
   (await cookies()).delete(AUTH_COOKIE);
+}
+
+export async function requireAuth(): Promise<void> {
+  if (!(await isAuthenticated())) {
+    redirect("/login");
+  }
 }
