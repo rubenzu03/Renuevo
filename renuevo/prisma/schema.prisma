@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,43 +8,44 @@ datasource db {
 }
 
 model Subscription {
-  id                String       @id @default(cuid())
-  name              String
-  currency          Decimal
-  billing_cycle     BillingCycle
-  next_renewal_date DateTime
-  category          String
-  is_active         Boolean      @default(true)
-  created_at        DateTime     @default(now())
-  updated_at        DateTime     @updatedAt
+  id                  String       @id @default(cuid())
+  name                String
+  priceCurrent        Decimal      @map("price_current")
+  currency            String
+  billingCycle        BillingCycle @map("billing_cycle")
+  billingIntervalDays Int?         @map("billing_interval_days")
+  nextRenewalDate     DateTime     @map("next_renewal_date")
+  category            String?
+  isActive            Boolean      @default(true) @map("is_active")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
 
-  price_histories   PriceHistory[]
-  notification_logs NotificationLog[]
+  priceHistories   PriceHistory[]
+  notificationLogs NotificationLog[]
 }
 
 model PriceHistory {
-  id              String       @id @default(cuid())
-  price           Decimal
-  recorded_at     DateTime     @default(now())
-  subscription_id String
-  subscription    Subscription @relation(fields: [subscription_id], references: [id])
+  id             String       @id @default(cuid())
+  price          Decimal
+  recordedAt     DateTime     @default(now()) @map("recorded_at")
+  subscriptionId String       @map("subscription_id")
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 }
 
 model NotificationLog {
-  id                  String        @id @default(cuid())
-  subscription_id     String
-  type                String
-  billing_cycle_start DateTime
-  sent_at             DateTime      @default(now())
-  subscription        Subscription? @relation(fields: [subscriptionId], references: [id])
-  subscriptionId      String?
+  id                String       @id @default(cuid())
+  subscriptionId    String       @map("subscription_id")
+  type              String
+  billingCycleStart DateTime     @map("billing_cycle_start")
+  sentAt            DateTime     @default(now()) @map("sent_at")
+  subscription      Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
-  @@unique([subscription_id, type, billing_cycle_start])
+  @@unique([subscriptionId, type, billingCycleStart])
 }
 
 enum BillingCycle {
-  WEEKLY
-  MONTHLY
-  QUARTERLY
-  YEARLY
+  weekly
+  monthly
+  quarterly
+  yearly
 }
