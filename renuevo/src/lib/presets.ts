@@ -4,6 +4,7 @@ export type Preset = {
   category: string;
   billingCycle: "monthly";
   logo: string;
+  color: string;
 };
 
 export const PRESETS: Preset[] = [
@@ -13,6 +14,7 @@ export const PRESETS: Preset[] = [
     category: "streaming",
     billingCycle: "monthly",
     logo: "/logos/netflix.png",
+    color: "#E50914",
   },
   {
     id: "spotify",
@@ -20,5 +22,6 @@ export const PRESETS: Preset[] = [
     category: "streaming",
     billingCycle: "monthly",
     logo: "/logos/spotify.png",
+    color: "#1DB954",
   },
 ];
