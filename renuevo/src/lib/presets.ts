@@ -3,7 +3,7 @@ export type Preset = {
   name: string;
   category: string;
   billingCycle: "monthly";
-  accent: string;
+  logo: string;
 };
 
 export const PRESETS: Preset[] = [
@@ -12,13 +12,13 @@ export const PRESETS: Preset[] = [
     name: "Netflix",
     category: "streaming",
     billingCycle: "monthly",
-    accent: "#E50914",
+    logo: "/logos/netflix.png",
   },
   {
     id: "spotify",
     name: "Spotify",
     category: "streaming",
     billingCycle: "monthly",
-    accent: "#1DB954",
+    logo: "/logos/spotify.png",
   },
 ];
