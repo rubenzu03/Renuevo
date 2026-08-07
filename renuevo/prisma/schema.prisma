@@ -30,15 +30,19 @@ model PriceHistory {
   recordedAt     DateTime     @default(now()) @map("recorded_at")
   subscriptionId String       @map("subscription_id")
   subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+
+  notificationLog NotificationLog?
 }
 
 model NotificationLog {
-  id                String       @id @default(cuid())
-  subscriptionId    String       @map("subscription_id")
+  id                String        @id @default(cuid())
+  subscriptionId    String        @map("subscription_id")
   type              String
-  billingCycleStart DateTime     @map("billing_cycle_start")
-  sentAt            DateTime     @default(now()) @map("sent_at")
-  subscription      Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  billingCycleStart DateTime?     @map("billing_cycle_start")
+  priceHistoryId    String?       @unique @map("price_history_id")
+  priceHistory      PriceHistory? @relation(fields: [priceHistoryId], references: [id], onDelete: Cascade)
+  sentAt            DateTime      @default(now()) @map("sent_at")
+  subscription      Subscription  @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@unique([subscriptionId, type, billingCycleStart])
 }
