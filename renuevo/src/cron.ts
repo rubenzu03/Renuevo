@@ -14,13 +14,13 @@ async function trigger() {
   }
   const body = await res.json();
   console.log(`[cron] ${new Date().toISOString()}`, body);
+}
 
-  if (process.env.RUN_ONCE === "true") {
-    trigger().finally(() => process.exit(0));
-  } else {
-    cron.schedule(schedule, trigger);
-    console.log(
-      `[cron] scheduled '${schedule}' -> ${baseUrl}/api/cron/check-subscriptions`,
-    );
-  }
+if (process.env.RUN_ONCE === "true") {
+  trigger().finally(() => process.exit(0));
+} else {
+  cron.schedule(schedule, trigger);
+  console.log(
+    `[cron] scheduled '${schedule}' -> ${baseUrl}/api/cron/check-subscriptions`,
+  );
 }
