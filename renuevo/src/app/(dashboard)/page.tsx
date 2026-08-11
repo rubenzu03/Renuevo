@@ -2,20 +2,8 @@ import Link from "next/link";
 import { differenceInCalendarDays, format } from "date-fns";
 import { prisma } from "@/lib/prisma";
 import { daysUntilText, formatMoney } from "@/lib/format";
+import { monthlyAmount } from "@/lib/money";
 import StatCard from "@/components/StatCard";
-
-function monthlyAmount(price: number, cycle: string): number {
-  switch (cycle) {
-    case "weekly":
-      return (price * 52) / 12;
-    case "quarterly":
-      return price / 3;
-    case "yearly":
-      return price / 12;
-    default:
-      return price;
-  }
-}
 
 export default async function DashboardPage() {
   const subscriptions = await prisma.subscription.findMany({
