@@ -30,6 +30,12 @@ export default async function DashboardLayout({
               >
                 Subscriptions
               </Link>
+              <Link
+                href="/bank"
+                className="hover:text-zinc-900 dark:hover:text-zinc-100"
+              >
+                Bank
+              </Link>
             </div>
           </div>
           <form action={logoutAction}>

@@ -89,6 +89,7 @@ model SuggestedSubscription {
   occurrences  Int
   firstSeen    DateTime         @map("first_seen")
   nextDueDate  DateTime         @map("next_due_date")
+  priceChanged Boolean          @default(false) @map("price_changed")
   status       SuggestionStatus @default(pending)
   createdAt    DateTime         @default(now()) @map("created_at")
   updatedAt    DateTime         @updatedAt @map("updated_at")
@@ -107,6 +108,7 @@ enum BillingCycle {
 
 enum BankProvider {
   mock
+  plaid
 }
 
 enum ConnectionStatus {
