@@ -51,5 +51,10 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
+  },
+  "allowScripts": {
+    "prisma@7.9.1": true,
+    "@prisma/engines@7.9.1": true,
+    "unrs-resolver@1.12.2": true
   }
 }
