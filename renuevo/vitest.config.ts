@@ -15,6 +15,7 @@ export default defineConfig({
     globalSetup: "./tests/global-setup.ts",
     include: ["src/**/*.test.{ts,tsx}"],
     pool: "forks",
+    fileParallelism: false,
     testTimeout: 20000,
     restoreMocks: true,
     coverage: {

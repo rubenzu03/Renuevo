@@ -47,9 +47,77 @@ model NotificationLog {
   @@unique([subscriptionId, type, billingCycleStart])
 }
 
+model BankConnection {
+  id              String           @id @default(cuid())
+  provider        BankProvider     @default(mock)
+  institutionName String           @map("institution_name")
+  status          ConnectionStatus @default(connected)
+  syncedAt        DateTime?        @map("synced_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @updatedAt @map("updated_at")
+
+  transactions BankTransaction[]
+  suggested    SuggestedSubscription[]
+
+  @@map("bank_connection")
+}
+
+model BankTransaction {
+  id           String         @id @default(cuid())
+  connectionId String         @map("connection_id")
+  connection   BankConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  externalId   String         @map("external_id")
+  merchantName String         @map("merchant_name")
+  amount       Decimal
+  currency     String
+  date         DateTime
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  @@unique([connectionId, externalId])
+  @@index([connectionId, date])
+  @@map("bank_transaction")
+}
+
+model SuggestedSubscription {
+  id           String           @id @default(cuid())
+  connectionId String           @map("connection_id")
+  connection   BankConnection   @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  merchantName String           @map("merchant_name")
+  amount       Decimal
+  currency     String
+  billingCycle BillingCycle     @map("billing_cycle")
+  occurrences  Int
+  firstSeen    DateTime         @map("first_seen")
+  nextDueDate  DateTime         @map("next_due_date")
+  priceChanged Boolean          @default(false) @map("price_changed")
+  status       SuggestionStatus @default(pending)
+  createdAt    DateTime         @default(now()) @map("created_at")
+  updatedAt    DateTime         @updatedAt @map("updated_at")
+
+  @@unique([connectionId, merchantName])
+  @@index([connectionId, status])
+  @@map("suggested_subscription")
+}
+
 enum BillingCycle {
   weekly
   monthly
   quarterly
   yearly
+}
+
+enum BankProvider {
+  mock
+  plaid
+}
+
+enum ConnectionStatus {
+  connected
+  error
+}
+
+enum SuggestionStatus {
+  pending
+  accepted
+  dismissed
 }

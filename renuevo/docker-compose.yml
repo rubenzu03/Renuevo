@@ -16,7 +16,31 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB}
-      
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      APP_PASSWORD: ${APP_PASSWORD}
+      AUTH_SECRET: ${AUTH_SECRET}
+      SMTP_HOST: mailhog
+      SMTP_PORT: ${SMTP_PORT}
+      MAIL_FROM: ${MAIL_FROM}
+      NOTIFY_EMAIL: ${NOTIFY_EMAIL}
+      CRON_SECRET: ${CRON_SECRET}
+      CRON_SCHEDULE: ${CRON_SCHEDULE}
+      BANK_PROVIDER: ${BANK_PROVIDER}
+      PLAID_CLIENT_ID: ${PLAID_CLIENT_ID}
+      PLAID_SECRET: ${PLAID_SECRET}
+      PLAID_ENV: ${PLAID_ENV}
+      PLAID_ACCESS_TOKEN: ${PLAID_ACCESS_TOKEN}
 
   adminer:
     image: adminer
@@ -29,7 +53,7 @@ services:
     container_name: mailhog
     restart: unless-stopped
     environment:
-      MH_STORAGE: maildir                  # switch from in-memory to maildir on disk :contentReference[oaicite:0]{index=0}
+      MH_STORAGE: maildir                  # switch from in-memory to maildir on disk
       MH_MAILDIR_PATH: /mailhog/data       # where on the container to store the maildir
     volumes:
       - ./mailhog_data:/mailhog/data

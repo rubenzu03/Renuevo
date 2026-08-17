@@ -1,0 +1,28 @@
+name: Notification cron
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run:
+    name: Ping check-subscriptions endpoint
+    runs-on: ubuntu-latest
+    if: ${{ vars.PROD_BASE_URL != '' }}
+    steps:
+      - name: Trigger notification run
+        env:
+          PROD_BASE_URL: ${{ vars.PROD_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          response=$(
+            curl --fail --silent --show-error \
+              --header "x-cron-secret: ${CRON_SECRET}" \
+              "${PROD_BASE_URL%%/}/api/cron/check-subscriptions"
+          )
+          echo "Cron endpoint responded: ${response}"
