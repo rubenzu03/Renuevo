@@ -1,3 +1,4 @@
+nodeLinker: hoisted
 allowBuilds:
   '@prisma/engines': true
   prisma: true
