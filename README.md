@@ -10,7 +10,7 @@
 <img src="https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma&logoColor=white"></img>
 <img src="https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white"></img>
 <img src="https://img.shields.io/badge/Tailwind%20CSS-4-06B6D4?logo=tailwindcss&logoColor=white"></img>
-<img src="https://img.shields.io/badge/pnpm-11-F69220?logo=pnpm&logoColor=white"></img>
+<img src="https://img.shields.io/badge/npm-11-CB3837?logo=npm&logoColor=white"></img>
 <img src="https://img.shields.io/badge/Vitest-4-6E9F18?logo=vitest&logoColor=white"></img>
 <img src="https://img.shields.io/badge/Zod-4-3E67B1?logo=zod&logoColor=white"></img>
 <img src="https://img.shields.io/badge/Plaid-45-212121?logo=plaid&logoColor=white"></img>
@@ -68,14 +68,13 @@ The app is built on the **Next.js 16 App Router** with **Prisma 7 + PostgreSQL**
 | Validation     | Zod                                                                     |
 | Notifications  | Nodemailer (Mailhog in dev), node-cron                                  |
 | Bank data      | Plaid SDK (real), Mock provider (dev / tests)                          |
-| Tooling        | pnpm, Docker, Vitest (90%+ coverage threshold), ESLint                 |
+| Tooling        | npm, Docker, Vitest (90%+ coverage threshold), ESLint                 |
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org) 20+ (Node 22 recommended)
-- [pnpm](https://pnpm.io)
+- [Node.js](https://nodejs.org) 20+ (Node 22 recommended, ships npm)
 - [Docker](https://www.docker.com) + Docker Compose (for PostgreSQL and Mailhog)
 
 ### 1. Infrastructure (PostgreSQL + Mailhog)
@@ -95,9 +94,9 @@ This starts:
 
 ```bash
 cd renuevo
-pnpm install
-pnpm exec prisma migrate deploy
-pnpm dev
+npm install
+npx prisma migrate deploy
+npm run dev
 ```
 
 Open <http://localhost:3000> and sign in with the `APP_PASSWORD` from your `.env`.
@@ -107,9 +106,9 @@ Open <http://localhost:3000> and sign in with the `APP_PASSWORD` from your `.env
 ### 3. Notifications in development
 
 ```bash
-pnpm cron:start        # schedules the daily check loop (CRON_SCHEDULE)
+npm run cron:start        # schedules the daily check loop (CRON_SCHEDULE)
 # or run once:
-RUN_ONCE=true pnpm cron:start
+RUN_ONCE=true npm run cron:start
 ```
 
 In production use an external scheduler that calls the protected route (see *API Overview*).
@@ -163,7 +162,7 @@ Renuevo ships with GitHub Actions pipelines in `.github/workflows/`.
 
 | Workflow   | Trigger                                                        | What it does                                                                        |
 | ---------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `ci.yml`   | Pull requests (any branch)                                     | pnpm install → `prisma generate` → `eslint` → `tsc --noEmit` → Vitest with enforced coverage → validates the Docker build |
+| `ci.yml`   | Pull requests (any branch)                                     | npm ci → `prisma generate` → `eslint` → `tsc --noEmit` → Vitest with enforced coverage → validates the Docker build |
 | `publish.yml` | Push to `main` / tags `v*`                                   | Builds the image and pushes `ghcr.io/rubenzu03/renuevo` (tags: `latest`, `main`, `vX.Y[.Z]`, `sha-…`) |
 | `cron.yml` | `schedule` (`0 6 * * *` UTC) + manual `workflow_dispatch`      | Pings `/api/cron/check-subscriptions` with `x-cron-secret` to run the notification job in production |
 
@@ -197,7 +196,7 @@ This pulls `ghcr.io/rubenzu03/renuevo:latest` and runs it next to its own Postgr
 | `MAIL_FROM`          | –        | –          | From header for outgoing emails                               |
 | `NOTIFY_EMAIL`       | –        | –          | Recipient for notification emails                             |
 | `CRON_SECRET`        | ✔        | –          | `x-cron-secret` header required by the cron route             |
-| `CRON_SCHEDULE`      | –        | `0 9 * * *`| Cron expression for the local runner (`pnpm cron:start`)      |
+| `CRON_SCHEDULE`      | –        | `0 9 * * *`| Cron expression for the local runner (`npm run cron:start`)    |
 | `BASE_URL`           | –        | `http://localhost:3000` | URL the cron runner pings |
 | `BANK_PROVIDER`      | –        | `mock`     | `mock` or `plaid` (tests always run mocked)                   |
 | `PLAID_CLIENT_ID`    | –        | –          | Plaid API client id (only for `BANK_PROVIDER=plaid`)          |
