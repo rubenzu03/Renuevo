@@ -22,7 +22,7 @@
 
 ## About
 
-**Renuevo** is a modern full-stack web application for centralizing your recurring subscriptions — streaming, software, gym, cloud and more — in one place. It tracks price, currency, billing cycle and next renewal date for every subscription, alerts you **by email before an upcoming renewal** and after a **detected price change**, and keeps a full price-history timeline on disk.
+**Renuevo** is a modern full-stack web application for centralizing your recurring subscriptions - streaming, software, gym, cloud and more - in one place. It tracks price, currency, billing cycle and next renewal date for every subscription, alerts you **by email before an upcoming renewal** and after a **detected price change**, and keeps a full price-history timeline on disk.
 
 The app is built on the **Next.js 16 App Router** with **Prisma 7 + PostgreSQL**, styled with **Tailwind CSS 4**, and shipped as a **standalone Docker image**. Bank-based ingestion is fully supported behind a **pluggable `BankProvider` interface**: a deterministic **mock provider** for development and tests, and **Plaid** for real bank connections.
 
@@ -33,7 +33,7 @@ The app is built on the **Next.js 16 App Router** with **Prisma 7 + PostgreSQL**
 ### Subscriptions
 
 - **Full CRUD** for subscriptions (name, price, currency, billing cycle, next renewal date, category)
-- **Price history** — every price update archives the previous value before overwriting, giving you a full timeline per subscription
+- **Price history** - every price update archives the previous value before overwriting, giving you a full timeline per subscription
 - **Auto-advancing renewal dates** per billing cycle (weekly / monthly / quarterly / yearly)
 - **Dashboard** with next renewal dates and monthly + yearly total spend
 
@@ -41,15 +41,15 @@ The app is built on the **Next.js 16 App Router** with **Prisma 7 + PostgreSQL**
 
 - **Upcoming-renewal emails** for renewals within the next 3 days
 - **Price-change emails** when a new price differs from the previous recorded one
-- **Duplicate-safe** — every send is logged in `NotificationLog` via a unique `(subscription, type, cycle)` guard
+- **Duplicate-safe** - every send is logged in `NotificationLog` via a unique `(subscription, type, cycle)` guard
 - **`CRON_SECRET`-protected API route** callable from any scheduler (cron-job.org, GitHub Actions, ...) plus a local `node-cron` runner
 
 ### Bank integration
 
-- **Pluggable providers** — `mock` (deterministic demo data, the default) and `plaid` (real bank accounts)
-- **Recurring-charge detection** — groups transactions by merchant, matches repeating amounts and cadence, flags **price changes**
-- **Suggested subscriptions** — detected charges are offered for one-click **accept** (feeding the regular `Subscription` model) or **dismiss**
-- **Offline first** — tests always run against the mock provider, never touching Plaid
+- **Pluggable providers** - `mock` (deterministic demo data, the default) and `plaid` (real bank accounts)
+- **Recurring-charge detection** - groups transactions by merchant, matches repeating amounts and cadence, flags **price changes**
+- **Suggested subscriptions** - detected charges are offered for one-click **accept** (feeding the regular `Subscription` model) or **dismiss**
+- **Offline first** - tests always run against the mock provider, never touching Plaid
 
 ### UX
 
@@ -87,7 +87,7 @@ docker compose up -d db mailhog
 
 This starts:
 - **PostgreSQL** on `localhost:5432`
-- **Mailhog** — fake SMTP on `:1025`, web UI at <http://localhost:8025>
+- **Mailhog** - fake SMTP on `:1025`, web UI at <http://localhost:8025>
 
 > Adminer (DB explorer) is also available in `docker-compose.yml` on port `8080` if you want it.
 
@@ -157,6 +157,35 @@ This starts **PostgreSQL**, **Mailhog**, and the **app** image together (all env
 
 ---
 
+## CI/CD
+
+Renuevo ships with GitHub Actions pipelines in `.github/workflows/`.
+
+| Workflow   | Trigger                                                        | What it does                                                                        |
+| ---------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `ci.yml`   | Pull requests (any branch)                                     | pnpm install → `prisma generate` → `eslint` → `tsc --noEmit` → Vitest with enforced coverage → validates the Docker build |
+| `publish.yml` | Push to `main` / tags `v*`                                   | Builds the image and pushes `ghcr.io/rubenzu03/renuevo` (tags: `latest`, `main`, `vX.Y[.Z]`, `sha-…`) |
+| `cron.yml` | `schedule` (`0 6 * * *` UTC) + manual `workflow_dispatch`      | Pings `/api/cron/check-subscriptions` with `x-cron-secret` to run the notification job in production |
+
+> `ci.yml` runs on every pull request; push the PR through the normal flow and `publish.yml` re-ships the exact commit that merged to `main`. Enable **branch protection** on `main` (require `CI` to pass) so CI always gates merges.
+
+### Required GitHub configuration
+
+- **Repository variables**: `PROD_BASE_URL` - the base URL of the deployed app; the scheduled cron job is skipped until this is set.
+- **Repository secrets**: `CRON_SECRET` - must match the `CRON_SECRET` the production container uses.
+- Registry auth uses the built-in `GITHUB_TOKEN` (`packages: write`) - no extra secrets.
+
+### Running the published image in production
+
+```bash
+cd renuevo
+docker compose -f docker-compose.prod.yml up -d --pull always
+```
+
+This pulls `ghcr.io/rubenzu03/renuevo:latest` and runs it next to its own PostgreSQL volume. `SMTP_*` should point at a real mail provider, and `DATABASE_URL` becomes `postgres://…@db:5432/…` automatically. The container applies `prisma migrate deploy` on boot.
+
+---
+
 ## Environment Variables
 
 | Variable             | Required | Default    | Description                                                   |
@@ -199,6 +228,6 @@ Everything else lives behind the authenticated UI:
 
 ## Roadmap
 
-- **Phase 1 (done)** — Manual subscription CRUD, price history, renewal/price-change emails, cron job, single-password auth
-- **Phase 2 (done)** — Pluggable `BankProvider` (mock + **Plaid**), recurring-charge detection, suggested subscriptions, tests running 100% on mock data
-- **Phase 3 (future)** — Gmail-parsing as a detection source, receipt OCR, push notifications, spending insights dashboard
+- **Phase 1 (done)** - Manual subscription CRUD, price history, renewal/price-change emails, cron job, single-password auth
+- **Phase 2 (done)** - Pluggable `BankProvider` (mock + **Plaid**), recurring-charge detection, suggested subscriptions, tests running 100% on mock data
+- **Phase 3 (future)** - Gmail-parsing as a detection source, receipt OCR, push notifications, spending insights dashboard
