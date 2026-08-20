@@ -1,33 +1,17 @@
 "use server";
 
-import { z } from "zod";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
-
-const BILLING_CYCLES = ["weekly", "monthly", "quarterly", "yearly"] as const;
-
-const subscriptionSchema = z.object({
-  name: z.string().min(1).max(100),
-  price: z
-    .string()
-    .regex(/^\d+(\.\d{1,2})?$/, "Price: number, up to 2 decimals"),
-  currency: z
-    .string()
-    .trim()
-    .regex(/^[A-Z]{3}$/, "Currency: 3 uppercase letters"),
-  billingCycle: z.enum(BILLING_CYCLES),
-  billingIntervalDays: z.string().trim().nullish(),
-  nextRenewalDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use YYYY-MM-DD"),
-  category: z.string().trim().max(50).nullish(),
-});
+import {
+  subscriptionSchema,
+  toDbInput,
+} from "@/lib/subscription-validation";
 
 export type ActionState =
   | { status: "error"; message: string; fieldErrors?: Record<string, string[]> }
   | { status: "ok" };
-
-type SubscriptionInput = z.infer<typeof subscriptionSchema>;
 
 function parseInput(formData: FormData) {
   const parsed = subscriptionSchema.safeParse({
@@ -47,20 +31,6 @@ function parseInput(formData: FormData) {
     (fieldErrors[key] ??= []).push(issue.message);
   }
   return { fieldErrors, message: "Check the form" };
-}
-
-function toDbInput(data: SubscriptionInput) {
-  return {
-    name: data.name,
-    priceCurrent: data.price,
-    currency: data.currency,
-    billingCycle: data.billingCycle,
-    billingIntervalDays: data.billingIntervalDays
-      ? Number(data.billingIntervalDays)
-      : null,
-    nextRenewalDate: new Date(`${data.nextRenewalDate}T00:00:00`),
-    category: data.category ?? null,
-  };
 }
 
 export async function createSubscription(
