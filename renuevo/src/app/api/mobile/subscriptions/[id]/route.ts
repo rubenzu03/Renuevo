@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { isMobileAuthorized } from "@/lib/mobile-auth";
 import {
   badRequest,
@@ -10,10 +9,12 @@ import {
   unauthorized,
 } from "@/lib/mobile/http";
 import { serializeSubscription } from "@/lib/mobile/serialization";
+import { subscriptionSchema } from "@/lib/subscription-validation";
 import {
-  subscriptionSchema,
-  toDbInput,
-} from "@/lib/subscription-validation";
+  deleteSubscription,
+  getSubscriptionWithPriceHistory,
+  updateSubscription,
+} from "@/lib/subscriptions-service";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +27,7 @@ export async function GET(req: NextRequest, ctx: RouteContext) {
     return unauthorized();
   }
   const { id } = await ctx.params;
-  const subscription = await prisma.subscription.findUnique({
-    where: { id },
-    include: { priceHistories: { orderBy: { recordedAt: "asc" } } },
-  });
+  const subscription = await getSubscriptionWithPriceHistory(id);
   if (!subscription) return notFound();
   return ok(serializeSubscription(subscription));
 }
@@ -39,9 +37,6 @@ export async function PUT(req: NextRequest, ctx: RouteContext) {
     return unauthorized();
   }
   const { id } = await ctx.params;
-
-  const existing = await prisma.subscription.findUnique({ where: { id } });
-  if (!existing) return notFound();
 
   let body: unknown;
   try {
@@ -55,19 +50,8 @@ export async function PUT(req: NextRequest, ctx: RouteContext) {
     return badRequest(parsed.error.issues[0]?.message ?? "Check the form");
   }
 
-  const priceChanged = !existing.priceCurrent.equals(parsed.data.price);
-
-  const updated = await prisma.$transaction(async (tx) => {
-    if (priceChanged) {
-      await tx.priceHistory.create({
-        data: { subscriptionId: id, price: existing.priceCurrent },
-      });
-    }
-    return tx.subscription.update({
-      where: { id },
-      data: toDbInput(parsed.data),
-    });
-  });
+  const updated = await updateSubscription(id, parsed.data);
+  if (!updated) return notFound();
 
   return ok(serializeSubscription(updated));
 }
@@ -77,9 +61,8 @@ export async function DELETE(req: NextRequest, ctx: RouteContext) {
     return unauthorized();
   }
   const { id } = await ctx.params;
-  const existing = await prisma.subscription.findUnique({ where: { id } });
-  if (!existing) return notFound();
+  const deleted = await deleteSubscription(id);
+  if (!deleted) return notFound();
 
-  await prisma.subscription.delete({ where: { id } });
   return noContent();
 }

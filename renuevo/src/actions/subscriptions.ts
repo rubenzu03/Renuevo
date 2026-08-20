@@ -2,12 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
+import { subscriptionSchema } from "@/lib/subscription-validation";
 import {
-  subscriptionSchema,
-  toDbInput,
-} from "@/lib/subscription-validation";
+  createSubscription as createSubscriptionRecord,
+  deleteSubscription as deleteSubscriptionRecord,
+  toggleSubscriptionActive as toggleSubscriptionActiveRecord,
+  updateSubscription as updateSubscriptionRecord,
+} from "@/lib/subscriptions-service";
 
 export type ActionState =
   | { status: "error"; message: string; fieldErrors?: Record<string, string[]> }
@@ -46,9 +48,7 @@ export async function createSubscription(
       fieldErrors: result.fieldErrors,
     };
   }
-  await prisma.subscription.create({
-    data: { ...toDbInput(result.data), isActive: true },
-  });
+  await createSubscriptionRecord(result.data);
   redirect("/subscriptions");
 }
 
@@ -67,22 +67,8 @@ export async function updateSubscription(
     };
   }
 
-  const existing = await prisma.subscription.findUnique({ where: { id } });
-  if (!existing) return { status: "error", message: "Subscription not found" };
-
-  const priceChanged = !existing.priceCurrent.equals(result.data!.price);
-
-  await prisma.$transaction(async (tx) => {
-    if (priceChanged) {
-      await tx.priceHistory.create({
-        data: { subscriptionId: id, price: existing.priceCurrent },
-      });
-    }
-    await tx.subscription.update({
-      where: { id },
-      data: toDbInput(result.data),
-    });
-  });
+  const updated = await updateSubscriptionRecord(id, result.data);
+  if (!updated) return { status: "error", message: "Subscription not found" };
 
   revalidatePath("/subscriptions");
   redirect(`/subscriptions/${id}`);
@@ -93,7 +79,7 @@ export async function deleteSubscription(
   _formData: FormData
 ): Promise<void> {
   await requireAuth();
-  await prisma.subscription.delete({ where: { id } });
+  await deleteSubscriptionRecord(id);
   revalidatePath("/subscriptions");
   redirect("/subscriptions");
 }
@@ -103,13 +89,9 @@ export async function toggleSubscriptionActive(
   _formData: FormData
 ): Promise<void> {
   await requireAuth();
-  const existing = await prisma.subscription.findUnique({ where: { id } });
-  if (!existing) redirect("/subscriptions");
+  const updated = await toggleSubscriptionActiveRecord(id);
+  if (!updated) redirect("/subscriptions");
 
-  await prisma.subscription.update({
-    where: { id },
-    data: { isActive: !existing.isActive },
-  });
   revalidatePath("/subscriptions");
   redirect(`/subscriptions/${id}`);
 }

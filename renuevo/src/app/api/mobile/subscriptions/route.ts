@@ -1,13 +1,12 @@
 import { NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
 import { isMobileAuthorized } from "@/lib/mobile-auth";
-import { created, ok, OPTIONS, unauthorized } from "@/lib/mobile/http";
+import { badRequest, created, ok, OPTIONS, unauthorized } from "@/lib/mobile/http";
 import { serializeSubscription } from "@/lib/mobile/serialization";
+import { subscriptionSchema } from "@/lib/subscription-validation";
 import {
-  subscriptionSchema,
-  toDbInput,
-} from "@/lib/subscription-validation";
-import { badRequest } from "@/lib/mobile/http";
+  createSubscription,
+  listSubscriptions,
+} from "@/lib/subscriptions-service";
 
 export const dynamic = "force-dynamic";
 
@@ -17,9 +16,7 @@ export async function GET(req: NextRequest) {
   if (!isMobileAuthorized(req.headers.get("authorization"))) {
     return unauthorized();
   }
-  const subscriptions = await prisma.subscription.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  const subscriptions = await listSubscriptions();
   return ok(subscriptions.map(serializeSubscription));
 }
 
@@ -40,8 +37,6 @@ export async function POST(req: NextRequest) {
     return badRequest(parsed.error.issues[0]?.message ?? "Check the form");
   }
 
-  const subscription = await prisma.subscription.create({
-    data: { ...toDbInput(parsed.data), isActive: true },
-  });
+  const subscription = await createSubscription(parsed.data);
   return created(serializeSubscription(subscription));
 }
