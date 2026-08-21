@@ -210,11 +210,50 @@ This pulls `ghcr.io/rubenzu03/renuevo:latest` and runs it next to its own Postgr
 
 ## API Overview
 
-Renuevo is server-action driven; the only public HTTP endpoint is the automation entry point used by schedulers.
+Renuevo is server-action driven for the web UI, and exposes two public HTTP endpoint groups:
+the automation entry point used by schedulers, and a small JSON API used by the mobile
+companion app (Renuevo-Pocket).
+
+### Architecture
+
+Web actions and mobile routes share the same domain layer, so business rules never drift:
+
+```
+src/actions/subscriptions.ts          web adapter (auth + FormData + redirects)
+src/app/api/mobile/**/route.ts        mobile adapter (auth + JSON + responses)
+        └─ src/lib/subscriptions-service.ts   shared business logic (create / update /
+              └─ src/lib/subscription-validation.ts   shared Zod schema + DB mapping
+```
+
+`subscriptions-service.ts` owns the rules that matter: defaulting new subscriptions to active,
+archiving the previous price to `PriceHistory` before a price change, toggling `isActive`, and
+deleting. The web action and every mobile route delegate to it, so a change made in one place
+is honored everywhere.
+
+### Automation endpoint
 
 | Method   | Endpoint                                  | Description                                             |
 | -------- | ----------------------------------------- | ------------------------------------------------------- |
 | `GET`    | `/api/cron/check-subscriptions`           | Runs the notification job (requires `x-cron-secret` header) |
+
+### Mobile API (`/api/mobile/*`)
+
+Authenticated with `Authorization: Bearer <token>` (obtained via the login endpoint). All
+routes return CORS-enabled JSON.
+
+| Method   | Endpoint                                              | Description                                  |
+| -------- | ----------------------------------------------------- | -------------------------------------------- |
+| `POST`   | `/api/mobile/auth/login`                              | `{ password }` → `{ token }`                 |
+| `GET`    | `/api/mobile/subscriptions`                           | List subscriptions                           |
+| `POST`   | `/api/mobile/subscriptions`                           | Create a subscription                        |
+| `GET`    | `/api/mobile/subscriptions/:id`                       | Subscription detail (+ price history)        |
+| `PUT`    | `/api/mobile/subscriptions/:id`                       | Update a subscription                        |
+| `DELETE` | `/api/mobile/subscriptions/:id`                       | Delete a subscription                        |
+| `PATCH`  | `/api/mobile/subscriptions/:id/toggle`                | Toggle `isActive`                            |
+
+The token is an HMAC-signed value (30-day expiry) derived from `AUTH_SECRET`; login verifies
+the shared `APP_PASSWORD`. Subscription payloads are validated with the same Zod schema as the
+web forms. Prices serialize as strings (Prisma `Decimal`).
 
 Everything else lives behind the authenticated UI:
 
