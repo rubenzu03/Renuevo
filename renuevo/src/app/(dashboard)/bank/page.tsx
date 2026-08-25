@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import BankPanel, {
   type BankConnectionView,
@@ -6,6 +5,7 @@ import BankPanel, {
 import SuggestedSubscriptions, {
   type SuggestedSubscriptionView,
 } from "@/components/SuggestedSubscriptions";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -47,13 +47,10 @@ export default async function BankPage() {
 
   return (
     <div>
-      <Link
-        href="/"
-        className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-      >
-        ← Back to dashboard
-      </Link>
-      <h1 className="mt-2 text-2xl font-semibold">Bank</h1>
+      <PageHeader
+        title="Bank"
+        subtext="Detect recurring charges and turn them into subscriptions."
+      />
       <BankPanel connection={connectionView} />
       <SuggestedSubscriptions suggestions={suggestionViews} />
     </div>

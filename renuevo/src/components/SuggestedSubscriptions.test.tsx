@@ -43,7 +43,7 @@ describe("SuggestedSubscriptions", () => {
   it("shows an empty state when there are no suggestions", () => {
     render(<SuggestedSubscriptions suggestions={[]} />);
     expect(
-      screen.getByText(/No recurring charges detected yet/)
+      screen.getByText(/No recurring charges detected/)
     ).toBeInTheDocument();
   });
 

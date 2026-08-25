@@ -32,7 +32,7 @@ describe("BankPage", () => {
 
     expect(screen.getByText("Bank")).toBeInTheDocument();
     expect(screen.getByText("empty-panel")).toBeInTheDocument();
-    expect(screen.getByText(/No recurring charges detected yet/)).toBeInTheDocument();
+    expect(screen.getByText(/No recurring charges detected/)).toBeInTheDocument();
   });
 
   it("shows connection details and suggestions when connected", async () => {

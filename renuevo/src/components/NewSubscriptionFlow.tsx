@@ -35,14 +35,14 @@ export default function NewSubscriptionFlow() {
         <button
           type="button"
           onClick={() => setSelection(null)}
-          className="text-sm text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          className="text-[13px] text-fog hover:text-paper"
         >
           ← Choose another template
         </button>
 
         {selection.kind === "preset" && (
           <div
-            className="mt-4 flex items-center gap-3 rounded-lg p-4 text-zinc-900"
+            className="mt-4 flex items-center gap-3 rounded-(--radius-card) p-4 text-void"
             style={{ backgroundImage: gradient(selection.preset.color) }}
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -77,7 +77,7 @@ export default function NewSubscriptionFlow() {
 
   return (
     <div>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-sm text-fog">
         Pick a service template, or start from scratch.
       </p>
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -86,7 +86,7 @@ export default function NewSubscriptionFlow() {
             key={preset.id}
             type="button"
             onClick={() => setSelection({ kind: "preset", preset })}
-            className="flex flex-col items-center gap-2 rounded-lg p-5 text-center text-zinc-900 transition-shadow hover:shadow-md"
+            className="flex flex-col items-center gap-2 rounded-(--radius-card) p-5 text-center text-void transition-opacity hover:opacity-90"
             style={{ backgroundImage: gradient(preset.color) }}
           >
             <span className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -99,7 +99,7 @@ export default function NewSubscriptionFlow() {
               />
             </span>
             <span className="font-medium">{preset.name}</span>
-            <span className="text-xs capitalize text-zinc-600">
+            <span className="text-xs capitalize opacity-70">
               {preset.category}
             </span>
           </button>
@@ -107,9 +107,9 @@ export default function NewSubscriptionFlow() {
         <button
           type="button"
           onClick={() => setSelection({ kind: "custom" })}
-          className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-zinc-300 bg-white p-5 text-center hover:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-500"
+          className="flex flex-col items-center gap-2 rounded-(--radius-card) border border-dashed border-graphite bg-white/[0.02] p-5 text-center transition-colors hover:border-smoke hover:bg-white/[0.04]"
         >
-          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100 dark:bg-zinc-800">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -117,16 +117,14 @@ export default function NewSubscriptionFlow() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="h-6 w-6 text-zinc-600 dark:text-zinc-300"
+              className="h-6 w-6 text-mist"
               aria-hidden="true"
             >
               <path d="M12 5v14M5 12h14" />
             </svg>
           </span>
-          <span className="font-medium">Custom</span>
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            Start from scratch
-          </span>
+          <span className="font-medium text-paper">Custom</span>
+          <span className="text-xs text-fog">Start from scratch</span>
         </button>
       </div>
     </div>

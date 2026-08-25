@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
 
-/** CORS for the mobile API. A shared password + bearer token is used, so a
- * permissive origin is acceptable for this self-hosted app. */
 export const CORS_HEADERS: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, DELETE, OPTIONS",
@@ -43,7 +41,6 @@ export function methodNotAllowed() {
   return corsResponse({ error: "Method not allowed" }, { status: 405 });
 }
 
-/** Handle OPTIONS preflight requests for the mobile API. */
 export function OPTIONS(): NextResponse {
   return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
 }

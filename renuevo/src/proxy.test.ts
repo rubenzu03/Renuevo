@@ -14,36 +14,40 @@ describe("proxy", () => {
     process.env.AUTH_SECRET = "proxy-test-secret";
   });
 
-  it("redirects unauthenticated users to /login with a next param", async () => {
+  it("redirects unauthenticated users to / with a next param", async () => {
     const res = await proxy(makeRequest("http://localhost:3000/subscriptions"));
     expect(res.status).toBe(307);
     const location = new URL(res.headers.get("location")!);
-    expect(location.pathname).toBe("/login");
+    expect(location.pathname).toBe("/");
     expect(location.searchParams.get("next")).toBe("/subscriptions");
   });
 
   it("preserves the query string in next", async () => {
-    const res = await proxy(makeRequest("http://localhost:3000/subscriptions?page=2"));
+    const res = await proxy(
+      makeRequest("http://localhost:3000/subscriptions?page=2")
+    );
     const location = new URL(res.headers.get("location")!);
     expect(location.searchParams.get("next")).toBe("/subscriptions?page=2");
   });
 
   it("lets authenticated users through", async () => {
     const token = signSession();
-    const res = await proxy(makeRequest("http://localhost:3000/", token));
+    const res = await proxy(
+      makeRequest("http://localhost:3000/subscriptions", token)
+    );
     expect(res.status).toBe(200);
   });
 
-  it("lets unauthenticated users view /login", async () => {
-    const res = await proxy(makeRequest("http://localhost:3000/login"));
-    expect(res.status).toBe(200);
-  });
-
-  it("redirects authenticated users away from /login", async () => {
+  it("redirects authenticated users from / to /overview", async () => {
     const token = signSession();
-    const res = await proxy(makeRequest("http://localhost:3000/login", token));
+    const res = await proxy(makeRequest("http://localhost:3000/", token));
     expect(res.status).toBe(307);
-    expect(new URL(res.headers.get("location")!).pathname).toBe("/");
+    expect(new URL(res.headers.get("location")!).pathname).toBe("/overview");
+  });
+
+  it("lets unauthenticated users view the landing page at /", async () => {
+    const res = await proxy(makeRequest("http://localhost:3000/"));
+    expect(res.status).toBe(200);
   });
 
   it("excludes API routes and static assets from the guard", () => {

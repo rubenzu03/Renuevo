@@ -35,7 +35,7 @@ describe("LoginForm", () => {
 
     const formData = loginActionMock.mock.calls[0][1] as FormData;
     expect(formData.get("password")).toBe("nope");
-    expect(formData.get("next")).toBe("/");
+    expect(formData.get("next")).toBe("/overview");
   });
 
   it("submits cleanly when the action succeeds", async () => {

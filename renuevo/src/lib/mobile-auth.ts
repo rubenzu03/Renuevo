@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from "crypto";
 
 const TOKEN_MARKER = "renuevo:mobile:v1";
-const TOKEN_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
+const TOKEN_MAX_AGE = 60 * 60 * 24 * 30;
 
 function constantTimeEqual(a: Buffer, b: Buffer): boolean {
   return a.length === b.length && timingSafeEqual(a, b);
@@ -27,7 +27,6 @@ export function verifyMobileToken(token: string | undefined): boolean {
   return Number(expiresAt) > Date.now();
 }
 
-/** Extract and validate a `Bearer <token>` from the Authorization header. */
 export function isMobileAuthorized(authorization: string | null): boolean {
   if (!authorization?.startsWith("Bearer ")) return false;
   return verifyMobileToken(authorization.slice("Bearer ".length));

@@ -36,13 +36,13 @@ describe("DashboardPage", () => {
     render(await DashboardPage());
 
     expect(screen.getByRole("heading", { name: "Overview" })).toBeInTheDocument();
-    expect(screen.getByText("€25.00")).toBeInTheDocument();
+    expect(screen.getAllByText("€25.00").length).toBeGreaterThan(0);
     expect(screen.getByText("€300.00")).toBeInTheDocument();
     expect(screen.getByText("2")).toBeInTheDocument();
     expect(
       screen.getByText(format(monthly.nextRenewalDate, "MMM d"))
     ).toBeInTheDocument();
-    expect(screen.getByText("in 1 day")).toBeInTheDocument();
+    expect(screen.getAllByText("in 1 day").length).toBeGreaterThan(0);
     expect(screen.getByText("Spotify")).toBeInTheDocument();
     expect(screen.getByText("Netflix")).toBeInTheDocument();
   });
@@ -52,7 +52,7 @@ describe("DashboardPage", () => {
 
     render(await DashboardPage());
 
-    expect(screen.getByText("—")).toBeInTheDocument();
+    expect(screen.getByText("-")).toBeInTheDocument();
     expect(screen.getByText("No active subscriptions")).toBeInTheDocument();
     expect(screen.getByText(/No subscriptions yet/)).toBeInTheDocument();
   });

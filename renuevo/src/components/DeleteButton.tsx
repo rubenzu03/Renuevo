@@ -1,6 +1,7 @@
 "use client";
 
 import { deleteSubscription } from "@/actions/subscriptions";
+import { Button } from "@/components/ui/Button";
 
 export default function DeleteButton({ id }: { id: string }) {
   return (
@@ -12,12 +13,9 @@ export default function DeleteButton({ id }: { id: string }) {
         }
       }}
     >
-      <button
-        type="submit"
-        className="rounded-md border border-red-200 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950"
-      >
+      <Button type="submit" variant="danger">
         Delete
-      </button>
+      </Button>
     </form>
   );
 }

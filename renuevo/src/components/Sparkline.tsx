@@ -26,7 +26,7 @@ export default function Sparkline({
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="w-full text-zinc-700 dark:text-zinc-200"
+      className="w-full text-mist"
       aria-label="Price trend"
       role="img"
     >
@@ -42,7 +42,7 @@ export default function Sparkline({
         x={w - pad}
         y={14}
         textAnchor="end"
-        className="fill-zinc-500 text-[11px]"
+        className="fill-fog font-mono text-[11px]"
       >
         {formatMoney(prices[prices.length - 1], currency)}
       </text>
