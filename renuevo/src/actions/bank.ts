@@ -21,7 +21,7 @@ export async function connectMockBank(): Promise<void> {
     await syncBankAccount(connection.id);
   }
 
-  revalidatePath("/");
+  revalidatePath("/overview");
   revalidatePath("/bank");
   redirect("/bank");
 }
@@ -32,7 +32,7 @@ export async function refreshBank(
 ): Promise<void> {
   await requireAuth();
   await syncBankAccount(connectionId);
-  revalidatePath("/");
+  revalidatePath("/overview");
   revalidatePath("/bank");
 }
 
@@ -63,7 +63,7 @@ export async function acceptSuggestion(
     });
   });
 
-  revalidatePath("/");
+  revalidatePath("/overview");
   revalidatePath("/bank");
   redirect("/bank");
 }

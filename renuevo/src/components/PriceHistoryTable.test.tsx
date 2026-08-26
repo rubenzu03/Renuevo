@@ -12,7 +12,7 @@ const history = (prices: string[]) =>
 describe("PriceHistoryTable", () => {
   it("marks the oldest price with an em dash", () => {
     render(<PriceHistoryTable history={history(["10", "12"])} currency="EUR" />);
-    expect(screen.getAllByText("—").length).toBe(1);
+    expect(screen.getAllByText("-").length).toBe(1);
   });
 
   it("shows increases as a positive amount on the latest row", () => {

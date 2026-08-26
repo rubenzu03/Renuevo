@@ -6,15 +6,16 @@ export async function proxy(req: NextRequest) {
   const token = req.cookies.get(AUTH_COOKIE)?.value;
 
   if (verifySession(token)) {
-    return pathname === "/login"
-      ? NextResponse.redirect(new URL("/", req.url))
-      : NextResponse.next();
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/overview", req.url));
+    }
+    return NextResponse.next();
   }
-  if (pathname === "/login") return NextResponse.next();
+  if (pathname === "/") return NextResponse.next();
 
-  const login = new URL("/login", req.url);
-  login.searchParams.set("next", pathname + search);
-  return NextResponse.redirect(login);
+  const home = new URL("/", req.url);
+  home.searchParams.set("next", pathname + search);
+  return NextResponse.redirect(home);
 }
 
 export const config = {

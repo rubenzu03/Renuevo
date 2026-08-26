@@ -132,9 +132,8 @@ describe("updateSubscription", () => {
     prismaMock.priceHistory.create.mockReset();
     prismaMock.$transaction.mockReset();
     prismaMock.$transaction.mockImplementation(
-      async (fn: (tx: typeof prismaMock) => Promise<void>) => {
-        await fn(prismaMock);
-      }
+      async (fn: (tx: typeof prismaMock) => Promise<unknown>) =>
+        fn(prismaMock)
     );
   });
 
@@ -148,6 +147,7 @@ describe("updateSubscription", () => {
     prismaMock.subscription.findUnique.mockResolvedValue({
       priceCurrent: decimal((v) => v === "9.99"),
     });
+    prismaMock.subscription.update.mockResolvedValue({});
     redirectMock.mockImplementation(() => {
       throw new Error("NEXT_REDIRECT");
     });
@@ -163,6 +163,7 @@ describe("updateSubscription", () => {
     prismaMock.subscription.findUnique.mockResolvedValue({
       priceCurrent: decimal((v) => v === "9.99"),
     });
+    prismaMock.subscription.update.mockResolvedValue({});
     redirectMock.mockImplementation(() => {
       throw new Error("NEXT_REDIRECT");
     });
@@ -214,10 +215,12 @@ describe("deleteSubscription", () => {
     requireAuthMock.mockReset();
     redirectMock.mockReset();
     revalidatePathMock.mockReset();
+    prismaMock.subscription.findUnique.mockReset();
     prismaMock.subscription.delete.mockReset();
   });
 
   it("deletes and redirects", async () => {
+    prismaMock.subscription.findUnique.mockResolvedValue({ id: "sub1" });
     prismaMock.subscription.delete.mockResolvedValue({});
     await deleteSubscription("sub1", new FormData());
     expect(prismaMock.subscription.delete).toHaveBeenCalledWith({ where: { id: "sub1" } });

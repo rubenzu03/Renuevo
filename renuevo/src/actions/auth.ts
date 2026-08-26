@@ -17,12 +17,12 @@ export async function loginAction(
   const ok = await login(password);
   if (!ok) return { error: "Wrong password" };
 
-  let next = String(formData.get("next") ?? "/");
-  if (!next.startsWith("/") || next.startsWith("//")) next = "/";
+  let next = String(formData.get("next") ?? "/overview");
+  if (!next.startsWith("/") || next.startsWith("//")) next = "/overview";
   redirect(next);
 }
 
 export async function logoutAction(): Promise<void> {
   await logout();
-  redirect("/login");
+  redirect("/");
 }

@@ -24,35 +24,43 @@ export default function PriceHistoryTable({
     .reverse();
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+    <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
-        <thead className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+        <thead>
           <tr>
-            <th className="px-4 py-2 font-medium">Date</th>
-            <th className="px-4 py-2 font-medium">Price</th>
-            <th className="px-4 py-2 font-medium">Change</th>
+            <th className="border-b border-graphite px-2 py-2 text-xs font-normal text-fog">
+              Date
+            </th>
+            <th className="border-b border-graphite px-2 py-2 text-xs font-normal text-fog">
+              Price
+            </th>
+            <th className="border-b border-graphite px-2 py-2 text-xs font-normal text-fog">
+              Change
+            </th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+        <tbody className="divide-y divide-graphite">
           {rows.map((r) => (
             <tr key={r.id}>
-              <td className="px-4 py-2">{format(r.recordedAt, "MMM d, yyyy")}</td>
-              <td className="px-4 py-2">{formatMoney(r.price, currency)}</td>
-              <td className="px-4 py-2">
+              <td className="px-2 py-2 text-mist">
+                {format(r.recordedAt, "MMM d, yyyy")}
+              </td>
+              <td className="px-2 py-2 font-mono text-mist">
+                {formatMoney(r.price, currency)}
+              </td>
+              <td className="px-2 py-2">
                 {r.change === null ? (
-                  "—"
+                  <span className="text-fog">-</span>
                 ) : r.change > 0 ? (
-                  <span className="text-emerald-600 dark:text-emerald-400">
+                  <span className="text-coral-red">
                     +{formatMoney(r.change, currency)}
                   </span>
                 ) : r.change < 0 ? (
-                  <span className="text-red-600 dark:text-red-400">
+                  <span className="text-pulse-green">
                     -{formatMoney(Math.abs(r.change), currency)}
                   </span>
                 ) : (
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    no change
-                  </span>
+                  <span className="text-fog">no change</span>
                 )}
               </td>
             </tr>

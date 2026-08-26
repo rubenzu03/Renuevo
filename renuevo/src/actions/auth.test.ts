@@ -51,22 +51,22 @@ describe("loginAction", () => {
     expect(redirectMock).toHaveBeenCalledWith("/subscriptions");
   });
 
-  it("defaults to / when next is missing", async () => {
+  it("defaults to /overview when next is missing", async () => {
     loginMock.mockResolvedValue(true);
     await loginAction(null, new FormData());
-    expect(redirectMock).toHaveBeenCalledWith("/");
+    expect(redirectMock).toHaveBeenCalledWith("/overview");
   });
 
   it("rejects absolute URLs", async () => {
     loginMock.mockResolvedValue(true);
     await loginAction(null, form("https://evil.example.com"));
-    expect(redirectMock).toHaveBeenCalledWith("/");
+    expect(redirectMock).toHaveBeenCalledWith("/overview");
   });
 
   it("rejects protocol-relative URLs", async () => {
     loginMock.mockResolvedValue(true);
     await loginAction(null, form("//evil.example.com"));
-    expect(redirectMock).toHaveBeenCalledWith("/");
+    expect(redirectMock).toHaveBeenCalledWith("/overview");
   });
 });
 
@@ -76,9 +76,9 @@ describe("logoutAction", () => {
     redirectMock.mockReset();
   });
 
-  it("clears the session and returns to /login", async () => {
+  it("clears the session and returns to the landing page", async () => {
     await logoutAction();
     expect(logoutMock).toHaveBeenCalledTimes(1);
-    expect(redirectMock).toHaveBeenCalledWith("/login");
+    expect(redirectMock).toHaveBeenCalledWith("/");
   });
 });

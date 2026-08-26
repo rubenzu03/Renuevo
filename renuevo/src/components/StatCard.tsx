@@ -1,3 +1,5 @@
+import { Card } from "@/components/ui/Card";
+
 export default function StatCard({
   title,
   value,
@@ -8,14 +10,12 @@ export default function StatCard({
   sub?: string;
 }) {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">{title}</p>
-      <p className="mt-1 truncate text-xl font-semibold">{value}</p>
+    <Card className="p-5">
+      <p className="text-[13px] text-fog">{title}</p>
+      <p className="mt-1 truncate font-mono text-xl text-paper">{value}</p>
       {sub && (
-        <p className="mt-0.5 truncate text-sm text-zinc-500 dark:text-zinc-400">
-          {sub}
-        </p>
+        <p className="mt-0.5 truncate text-[13px] text-fog">{sub}</p>
       )}
-    </div>
+    </Card>
   );
 }

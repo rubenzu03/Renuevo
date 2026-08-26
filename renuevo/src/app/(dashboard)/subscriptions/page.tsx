@@ -4,6 +4,10 @@ import { prisma } from "@/lib/prisma";
 import { daysUntilText, formatMoney } from "@/lib/format";
 import { toggleSubscriptionActive } from "@/actions/subscriptions";
 import DeleteButton from "@/components/DeleteButton";
+import { Badge, type BadgeTone } from "@/components/ui/Badge";
+import { Card } from "@/components/ui/Card";
+import { Button, ButtonLink } from "@/components/ui/Button";
+import { EmptyState, PageHeader } from "@/components/ui/PageHeader";
 
 export default async function SubscriptionsPage() {
   const subscriptions = await prisma.subscription.findMany({
@@ -13,92 +17,79 @@ export default async function SubscriptionsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Subscriptions</h1>
-        <Link
-          href="/subscriptions/new"
-          className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          Add subscription
-        </Link>
-      </div>
+      <PageHeader
+        title="Subscriptions"
+        actions={
+          <ButtonLink href="/subscriptions/new">Add subscription</ButtonLink>
+        }
+      />
 
       {subscriptions.length === 0 ? (
-        <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
-          No subscriptions yet.{" "}
-          <Link
-            href="/subscriptions/new"
-            className="text-zinc-900 underline dark:text-zinc-100"
-          >
-            Add your first one
-          </Link>
-          .
-        </p>
+        <EmptyState
+          title="No subscriptions yet"
+          description="Track recurring costs and get notified before every renewal."
+          action={
+            <ButtonLink href="/subscriptions/new">
+              Add your first one
+            </ButtonLink>
+          }
+        />
       ) : (
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {subscriptions.map((s) => {
             const days = differenceInCalendarDays(s.nextRenewalDate, today);
+            const statusTone: BadgeTone = s.isActive ? "success" : "neutral";
             return (
-              <div
-                key={s.id}
-                className="flex flex-col rounded-lg border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
-              >
+              <Card key={s.id} className="flex flex-col p-5">
                 <div className="flex items-start justify-between gap-2">
                   <Link
                     href={`/subscriptions/${s.id}`}
-                    className="font-medium hover:underline"
+                    className="text-sm font-medium text-paper hover:underline"
                   >
                     {s.name}
                   </Link>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      s.isActive
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
-                        : "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400"
-                    }`}
-                  >
+                  <Badge tone={statusTone}>
                     {s.isActive ? "Active" : "Paused"}
-                  </span>
+                  </Badge>
                 </div>
 
-                <p className="mt-2 text-lg font-semibold">
+                <p className="mt-2 font-mono text-lg text-paper">
                   {formatMoney(Number(s.priceCurrent), s.currency)}
-                  <span className="ml-1 text-sm font-normal capitalize text-zinc-500 dark:text-zinc-400">
+                  <span className="ml-1 font-sans text-[13px] capitalize text-fog">
                     / {s.billingCycle}
                   </span>
                 </p>
 
-                <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mt-1 text-[13px] text-fog">
                   {format(s.nextRenewalDate, "MMM d, yyyy")} ·{" "}
                   {daysUntilText(days)}
                 </p>
 
                 {s.category && (
-                  <span className="mt-2 inline-block w-fit rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                    {s.category}
+                  <span className="mt-3 w-fit">
+                    <Badge tone="accent">{s.category}</Badge>
                   </span>
                 )}
 
-                <div className="mt-4 flex items-center gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
+                <div className="flex-1" />
+
+                <div className="mt-4 flex items-center gap-1 border-t border-graphite pt-3">
                   <Link
                     href={`/subscriptions/${s.id}`}
-                    className="rounded-md px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                    className="rounded-(--radius-btn) px-3 py-1.5 text-[13px] text-mist hover:bg-white/5"
                   >
                     Edit
                   </Link>
                   <form action={toggleSubscriptionActive.bind(null, s.id)}>
-                    <button
-                      type="submit"
-                      className="rounded-md px-3 py-1.5 text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                    >
+                    <Button type="submit" variant="ghost">
                       {s.isActive ? "Pause" : "Resume"}
-                    </button>
+                    </Button>
                   </form>
                   <span className="ml-auto">
                     <DeleteButton id={s.id} />
                   </span>
                 </div>
-              </div>
+              </Card>
             );
           })}
         </div>
