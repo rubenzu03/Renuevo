@@ -8,7 +8,7 @@ export async function resetDb(): Promise<void> {
   const client = new pg.Client({ connectionString: TEST_DATABASE_URL });
   await client.connect();
   await client.query(
-    `TRUNCATE "Subscription", "bank_connection", "bank_transaction", "suggested_subscription", "push_subscription" CASCADE`
+    `TRUNCATE "Subscription", "bank_connection", "bank_transaction", "suggested_subscription" CASCADE`
   );
   await client.end();
 }
