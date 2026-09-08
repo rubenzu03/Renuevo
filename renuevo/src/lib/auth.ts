@@ -55,6 +55,6 @@ export async function logout(): Promise<void> {
 
 export async function requireAuth(): Promise<void> {
   if (!(await isAuthenticated())) {
-    redirect("/login");
+    redirect("/");
   }
 }

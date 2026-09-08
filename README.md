@@ -20,6 +20,11 @@
 
 </div>
 
+<img width="1722" height="908" alt="Captura de pantalla 2026-09-08 a las 1 38 38" src="https://github.com/user-attachments/assets/917a82c8-a696-4774-b647-df4f3c98c7f5" />
+<img width="1728" height="908" alt="Captura de pantalla 2026-09-08 a las 1 38 57" src="https://github.com/user-attachments/assets/e7ffdf1b-bc30-4a6e-aa94-84d5b1bd8946" />
+
+
+
 ## About
 
 **Renuevo** is a modern full-stack web application for centralizing your recurring subscriptions - streaming, software, gym, cloud and more - in one place. It tracks price, currency, billing cycle and next renewal date for every subscription, alerts you **by email before an upcoming renewal** and after a **detected price change**, and keeps a full price-history timeline on disk.
