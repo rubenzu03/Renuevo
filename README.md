@@ -247,8 +247,3 @@ Everything else lives behind the authenticated UI:
 | Bank connect/refresh  | Connect/refresh a provider, sync transactions      |
 | Accept / dismiss      | Confirm a detected charge as a subscription, or skip it |
 
-## Roadmap
-
-- **Phase 1 (done)** - Manual subscription CRUD, price history, renewal/price-change emails, cron job, single-password auth
-- **Phase 2 (done)** - Pluggable `BankProvider` (mock + **Plaid**), recurring-charge detection, suggested subscriptions, tests running 100% on mock data
-- **Phase 3 (future)** - Gmail-parsing as a detection source, receipt OCR, push notifications, spending insights dashboard
