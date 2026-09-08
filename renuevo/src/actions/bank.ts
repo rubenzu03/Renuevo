@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/auth";
 import { syncBankAccount } from "@/lib/bank/sync";
 import { MOCK_INSTITUTION } from "@/lib/bank/mock";
+import { GMAIL_INSTITUTION } from "@/lib/email-receipts/gmail";
 
 export async function connectMockBank(): Promise<void> {
   await requireAuth();
@@ -16,6 +17,27 @@ export async function connectMockBank(): Promise<void> {
       data: {
         provider: "mock",
         institutionName: MOCK_INSTITUTION,
+      },
+    });
+    await syncBankAccount(connection.id);
+  }
+
+  revalidatePath("/overview");
+  revalidatePath("/bank");
+  redirect("/bank");
+}
+
+export async function connectGmailInbox(): Promise<void> {
+  await requireAuth();
+
+  let connection = await prisma.bankConnection.findFirst({
+    where: { provider: "gmail" },
+  });
+  if (!connection) {
+    connection = await prisma.bankConnection.create({
+      data: {
+        provider: "gmail",
+        institutionName: GMAIL_INSTITUTION,
       },
     });
     await syncBankAccount(connection.id);

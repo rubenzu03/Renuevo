@@ -1,7 +1,7 @@
 "use client";
 
 import { format } from "date-fns";
-import { connectMockBank, refreshBank } from "@/actions/bank";
+import { connectGmailInbox, connectMockBank, refreshBank } from "@/actions/bank";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -31,9 +31,21 @@ export default function BankPanel({
             account is involved.
           </p>
         </div>
-        <form action={connectMockBank}>
-          <Button type="submit">Connect demo bank</Button>
-        </form>
+        <div className="flex flex-wrap gap-2">
+          <form action={connectMockBank}>
+            <Button type="submit">Connect demo bank</Button>
+          </form>
+          <form action={connectGmailInbox}>
+            <Button type="submit" variant="outline">
+              Scan Gmail receipts
+            </Button>
+          </form>
+        </div>
+        <p className="text-[13px] text-fog">
+          Gmail scanning parses billing receipts into transactions. Without a{" "}
+          <code className="font-mono">GMAIL_ACCESS_TOKEN</code> it uses
+          built-in demo receipts - no real inbox is touched.
+        </p>
       </Card>
     );
   }

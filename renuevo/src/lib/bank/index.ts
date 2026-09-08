@@ -1,5 +1,6 @@
 import { MockBankProvider } from "./mock";
 import { createPlaidBankProvider } from "./plaid";
+import { GmailReceiptProvider } from "@/lib/email-receipts/gmail";
 import type { BankProvider, BankProviderId } from "./types";
 
 const DEFAULT_PROVIDER: BankProviderId = "mock";
@@ -15,6 +16,8 @@ export function createBankProvider(
       return new MockBankProvider(connectionId, now);
     case "plaid":
       return createPlaidBankProvider();
+    case "gmail":
+      return new GmailReceiptProvider(now);
     default:
       throw new Error(`Unknown bank provider: ${id}`);
   }
