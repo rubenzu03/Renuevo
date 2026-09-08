@@ -2,13 +2,16 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
-const { connectMockBankMock, refreshBankMock } = vi.hoisted(() => ({
-  connectMockBankMock: vi.fn(),
-  refreshBankMock: vi.fn(),
-}));
+const { connectMockBankMock, connectGmailInboxMock, refreshBankMock } =
+  vi.hoisted(() => ({
+    connectMockBankMock: vi.fn(),
+    connectGmailInboxMock: vi.fn(),
+    refreshBankMock: vi.fn(),
+  }));
 
 vi.mock("@/actions/bank", () => ({
   connectMockBank: connectMockBankMock,
+  connectGmailInbox: connectGmailInboxMock,
   refreshBank: refreshBankMock,
 }));
 
@@ -37,6 +40,17 @@ describe("BankPanel", () => {
 
     await user.click(screen.getByRole("button", { name: "Connect demo bank" }));
     expect(connectMockBankMock).toHaveBeenCalledTimes(1);
+  });
+
+  it("offers Gmail receipt scanning when there is no connection", async () => {
+    connectGmailInboxMock.mockResolvedValue(undefined);
+    const user = userEvent.setup();
+    render(<BankPanel connection={null} />);
+
+    await user.click(
+      screen.getByRole("button", { name: "Scan Gmail receipts" })
+    );
+    expect(connectGmailInboxMock).toHaveBeenCalledTimes(1);
   });
 
   it("shows connection details when connected", () => {

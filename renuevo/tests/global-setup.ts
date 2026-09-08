@@ -19,8 +19,8 @@ export default async function globalSetup(): Promise<void> {
   }
   await admin.end();
 
-  const npm = process.platform === "win32" ? "npm.cmd" : "npm";
-  execSync(`${npm} exec -- prisma migrate deploy`, {
+  const pnpm = process.platform === "win32" ? "pnpm.cmd" : "pnpm";
+  execSync(`${pnpm} exec prisma migrate deploy`, {
     cwd: projectRoot(),
     env: { ...process.env, DATABASE_URL: TEST_DATABASE_URL },
     stdio: "inherit",

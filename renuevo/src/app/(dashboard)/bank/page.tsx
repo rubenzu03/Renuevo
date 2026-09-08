@@ -5,6 +5,7 @@ import BankPanel, {
 import SuggestedSubscriptions, {
   type SuggestedSubscriptionView,
 } from "@/components/SuggestedSubscriptions";
+import ReceiptUploadForm from "@/components/ReceiptUploadForm";
 import { PageHeader } from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
@@ -53,6 +54,7 @@ export default async function BankPage() {
       />
       <BankPanel connection={connectionView} />
       <SuggestedSubscriptions suggestions={suggestionViews} />
+      <ReceiptUploadForm />
     </div>
   );
 }

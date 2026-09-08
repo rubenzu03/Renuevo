@@ -26,6 +26,7 @@ export default async function DashboardLayout({
               <NavLink href="/subscriptions" label="Subscriptions" />
               <NavLink href="/calendar" label="Calendar" />
               <NavLink href="/bank" label="Bank" />
+              <NavLink href="/insights" label="Insights" />
             </div>
           </div>
           <form action={logoutAction}>

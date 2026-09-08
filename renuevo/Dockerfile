@@ -2,13 +2,15 @@
 
 FROM node:26-alpine AS deps
 WORKDIR /app
-RUN npm install -g pnpm@11.24.0
+RUN apk upgrade --no-cache
+RUN npm install -g corepack@latest && corepack enable
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM node:26-alpine AS builder
 WORKDIR /app
-RUN npm install -g pnpm@11.24.0
+RUN apk upgrade --no-cache
+RUN npm install -g corepack@latest && corepack enable
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -17,6 +19,7 @@ RUN pnpm run build
 
 FROM node:26-alpine AS runner
 WORKDIR /app
+RUN apk upgrade --no-cache
 RUN addgroup --system --gid 1001 nodejs \
   && adduser --system --uid 1001 nextjs
 ENV NODE_ENV=production

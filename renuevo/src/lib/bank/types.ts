@@ -1,4 +1,4 @@
-export type BankProviderId = "mock" | "plaid";
+export type BankProviderId = "mock" | "plaid" | "gmail";
 
 export type RawBankAccount = {
   externalId: string;

@@ -109,6 +109,7 @@ enum BillingCycle {
 enum BankProvider {
   mock
   plaid
+  gmail
 }
 
 enum ConnectionStatus {
