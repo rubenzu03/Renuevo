@@ -109,6 +109,17 @@ enum BillingCycle {
 enum BankProvider {
   mock
   plaid
+  gmail
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("push_subscription")
 }
 
 enum ConnectionStatus {
